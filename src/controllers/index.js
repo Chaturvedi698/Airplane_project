@@ -1,3 +1,4 @@
 module.exports = {
-    Infocontroller : require('./info-controller')
+    Infocontroller : require('./info-controller'),
+    AirplaneController : require('./airplane-controller')
 }
