@@ -3,24 +3,17 @@ const { Logger} = require('../config');
 
 class CrudRepository{
     constructor(model){
-        console.log(' in consturctor of crud');
+        // console.log(model);
         this.model = model;
     }
 
     async create(data){
-        try {
-            console.log(data);
+     
+            // console.log(data);
                 const response = await this.model.create(data);
-                console.log("rsponse is ",response)
+                // console.log("rsponse is ",response)
                 return response;
             
-        } catch (error) {
-            console.log('in the catch of crud');
-            // console.log(error)
-            Logger.error('Something went wrong in the Crud Repo : create');
-            throw error;
-        }
-
     }
 
     async destroy(data){
@@ -73,3 +66,5 @@ class CrudRepository{
 }
 
 module.exports = CrudRepository;
+
+
