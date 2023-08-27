@@ -49,9 +49,21 @@ async function getAirplane(id){
         throw new AppError('cannot fetch data of all the airplanes',StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
+async function deleteAirplane(id){
+    try {
+        const airplane = await airplaneRepository.destroy(id);
+        return airplane;
+    } catch (error) {
+        if(error.statusCode==StatusCodes.NOT_FOUND){
+            throw new AppError('The airplane you requested is not present',error.statusCode);
+        }
+        throw new AppError('cannot fetch data of all the airplanes',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 
 module.exports = {
     createAirplane,
     getAirplanes,
-    getAirplane
+    getAirplane,
+    deleteAirplane
 }
