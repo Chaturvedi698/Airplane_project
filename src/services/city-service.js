@@ -20,9 +20,32 @@ async function createCity(data){
         throw new AppError('Cannot create a new City object',StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
-
+async function deleteCity(id){
+    try {
+        const city = await cityRepository.destroy(id);
+        return city;
+    } catch (error) {
+        if(error.statusCode==StatusCodes.NOT_FOUND){
+            throw new AppError('The city you requested is not present',error.statusCode);
+        }
+        throw new AppError('cannot fetch data of  the city',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+async function updateCity(data,id){
+    try {
+        const city = await cityRepository.update(data,id);
+        return city;
+    } catch (error) {
+        if(error.statusCode==StatusCodes.NOT_FOUND){
+            throw new AppError('The city you requested is not present',error.statusCode);
+        }
+        throw new AppError('cannot fetch data of  the city',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 
 module.exports = {
-    createCity
+    createCity,
+    deleteCity,
+    updateCity
 
 }
