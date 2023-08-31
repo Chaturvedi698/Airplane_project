@@ -1,0 +1,10 @@
+const express = require('express');
+const router = express.Router();
+const {CityController } = require('../../controllers');
+const {CityValidations} = require('../../middlewares');
+ // /api/v1/airplanes POST
+router.post('/',
+CityValidations.validateCreateRequest,
+CityController.createCity);
+ 
+module.exports = router 
