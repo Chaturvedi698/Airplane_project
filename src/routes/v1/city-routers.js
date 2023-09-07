@@ -11,6 +11,7 @@ CityController.createCity);
 router.delete('/:id',
 CityController.deleteCity);
 // api/v1/cities/:id update
+
 router.patch('/:id',
 CityController.updateCity);  
  
