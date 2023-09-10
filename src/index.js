@@ -14,4 +14,4 @@ app.use('/api',apiroutes);
 // console.log(process.env)
 app.listen(serverConfig.PORT,async ()=>{
     console.log(`Server is running on the port no ${server.PORT}`);
-}); 
+});
