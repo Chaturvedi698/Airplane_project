@@ -1,9 +1,7 @@
 const  express = require('express');
 const apiroutes = require('./routes');
 const { server} = require('./config');
-const {City} = require('./models')
 const serverConfig = require('./config/server-config');
-
 const app = express();
 
 app.use(express.json()); // making express to eligible for taking json
