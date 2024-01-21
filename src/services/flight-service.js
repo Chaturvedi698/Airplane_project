@@ -2,6 +2,8 @@
 const {StatusCodes} = require('http-status-codes');
 const { FlightRepository } = require('../repositories');
 const AppError = require('../utils/errors/app-error');
+const { deleteAirplane } = require('./airplane-service');
+const { Op } = require('sequelize');
 
 const  flightRepository = new FlightRepository();
 
@@ -23,57 +25,52 @@ async function createFlight(data){
     }
 }
 
-// async function getAirports(){
-//     try {
-//         // console.log("in the service get all");
-//         const airports = await airportRepository.getALL();
-//         // console.log(airplanes)
-//         return airports;
-//     } catch (error) {
-//         // console.log(error)
-//         throw new AppError('cannot fetch data of all the airport',StatusCodes.INTERNAL_SERVER_ERROR);
-//     }
-// }
+async function getAllFlights(query){
+    let customFilter = {}
+    const endingTripTime = " 23:59:59"
+    let sortFilter = []
+    //tripes = MUM-DEL
+    if(query.trips){
+        [departureAirportId, arrivalAirportId] = query.trips.split('-');
+        customFilter.departureAirportId = departureAirportId;
+        customFilter.arrivalAirportId = arrivalAirportId;
+        //TODO : add a check they are not same, if they same give error or return empty object
+    }
 
-// async function getAirport(id){
-//     try {
-//         const airport = await airportRepository.get(id);
-//         return airport;
-//     } catch (error) {
-//         console.log(error.statusCode)
-//         if(error.statusCode==StatusCodes.NOT_FOUND){
-//             throw new AppError('The airport you requested is not present',error.statusCode);
-//         }
-//         throw new AppError('cannot fetch data of  the airpot',StatusCodes.INTERNAL_SERVER_ERROR);
-//     }
-// }
-// async function deleteAirport(id){
-//     try {
-//         const airport = await airportRepository.destroy(id);
-//         return airport;
-//     } catch (error) {
-//         if(error.statusCode==StatusCodes.NOT_FOUND){
-//             throw new AppError('The airport you requested is not present',error.statusCode);
-//         }
-//         throw new AppError('cannot fetch data of  the airport',StatusCodes.INTERNAL_SERVER_ERROR);
-//     }
-// }
-// async function updateAirport(data,id){
-//     try {
-//         const airport = await airportRepository.update(data,id);
-//         return airport;
-//     } catch (error) {
-//         if(error.statusCode==StatusCodes.NOT_FOUND){
-//             throw new AppError('The airport you requested is not present',error.statusCode);
-//         }
-//         throw new AppError('cannot fetch data of  the airport',StatusCodes.INTERNAL_SERVER_ERROR);
-//     }
-// }
+    if(query.price){
+        [minPrice,maxPrice] = query.price.split('-')
+        customFilter.price = {
+            [Op.between] : [minPrice,maxPrice ? maxPrice : 20000]
+        }
+    }
+
+    if(query.travellers){
+        customFilter.totalSeats = {
+            [Op.gte] : query.travellers
+        }
+    }
+    if(query.tripDate){
+        // endingTripTime = query.tripDate + endingTripTime
+        // console.log(endingTripTime)  
+        customFilter.departureTime  = {
+            [Op.between] : [query.tripDate, query.tripDate + endingTripTime] 
+        }
+    }
+    if(query.sort){
+        const params = query.sort.split(',');
+        const sortFilters  = params.map((param)=> param.split('_'));
+        sortFilter = sortFilters
+    }
+    try {
+        const flights = await flightRepository.getAllFlights(customFilter,sortFilter);
+        return flights;
+    } catch (error) {
+        throw new AppError('cannot fetch data of all the Flights',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 
 module.exports = {
-    createFlight
-    // getAirports,
-    // getAirport,
-    // deleteAirport,
-    // updateAirport
+    createFlight,
+    getAllFlights
 }
